@@ -77,7 +77,7 @@ class PayPageProcessing(Payment):
 class BillProcessing(Payment):
 
     keys_required = ('shop_amount', 'shop_currency', 'shop_id', 'shop_order_id', 'payer_currency')
-    action_url = 'https://core.piastrix.com/bill/creat'
+    action_url = 'https://core.piastrix.com/bill/create'
 
     def __init__(self, amount, currency, description):
         super().__init__(amount, currency, description)
