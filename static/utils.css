@@ -1,0 +1,88 @@
+body {
+    color: #000;
+    font-family: open sans,helvetica neue,Helvetica,Arial,lucida grande,sans-serif;
+    font-size: 0.8em;
+    line-height: 0.8;
+}
+
+div {
+    display: block;
+}
+
+.content {
+    margin:0 auto;
+    margin-top: 20px;
+    padding: 10px;
+    width: 400px;
+    text-align: left;
+    border: 1px solid #ccc!important;
+    border-radius: 6px;
+}
+
+.error {
+    margin:0 auto;
+    margin-top: 5px;
+    text-align: center;
+    font-size: 0.8em;
+    color:red;
+}
+
+label, div.confirm-order{
+	display: block;
+	margin: 0px 0px 15px 0px;
+}
+
+label > span{
+	width: 30%;
+	font-weight: bold;
+	float: left;
+	padding-top: 8px;
+	padding-right: 5px;
+}
+
+.confirm-order span{
+    width: 30%;
+    float: left;
+    font-weight: bold;
+}
+
+input.input-field, .select-field, .textarea-field {
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	border: 1px solid #C2C2C2;
+	box-shadow: 1px 1px 4px #EBEBEB;
+	-moz-box-shadow: 1px 1px 4px #EBEBEB;
+	-webkit-box-shadow: 1px 1px 4px #EBEBEB;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	padding: 7px;
+	outline: none;
+}
+
+input.input-field, .select-field {
+	width: 50%;
+}
+
+.textarea-field {
+    width: 50%;
+    max-width:50%;
+    max-height:400px;
+}
+
+span.required{
+	color:red;
+}
+
+input[type=submit], input[type=button]{
+	background: #576E86;
+	border: none;
+	padding: 8px 10px 8px 10px;
+	border-radius: 5px;
+	color: #A8BACE;
+}
+
+input[type=submit]:hover, input[type=button]:hover{
+	background: #394D61;
+}
