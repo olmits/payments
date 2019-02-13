@@ -1,6 +1,8 @@
 import hashlib
+import uuid
 import requests
 from datetime import datetime
+
 from webapp.db_model import PaymentsDB
 from webapp import app
 
@@ -8,8 +10,6 @@ from webapp import app
 class Payment:
 
     secret_key = "SecretKey01"
-    subclasses = {}
-    payment_num = 1
 
     def __init__(self, amount, currency, description):
         self.amount = str.replace(amount, ',', '.')
@@ -17,26 +17,21 @@ class Payment:
         self.description = description
         self.shop_id = '5'
         self.shop_order_id = '4268'
-        self.payment_id = "%s%i_%s" % (currency,
-                                       Payment.payment_num,
-                                       datetime.strftime(datetime.now(), "%d%m%y%H%M%S")
-                                       )
+        self.payment_id = str(uuid.uuid4())[:8]
+
         Payment.update_db(self)
 
     @classmethod
-    def form_processing(cls, form):
-        return cls(form['amount'], form['currency'], form['description'])
+    def create_payment(cls, currency_code, form):
+        currency_to_class_map = {
+            '978': PayPageProcessing,
+            '840': BillProcessing,
+            '643': InvoiceProcessing
+        }
 
-    @classmethod
-    def payment_subclass(cls, currency_type):
-        def decorator(subclass):
-            cls.subclasses[currency_type] = subclass
-            return subclass
-        return decorator
+        form_processing = currency_to_class_map.get(currency_code)
 
-    @classmethod
-    def get_subclass(cls, currency_type):
-        return cls.subclasses[currency_type]
+        return form_processing(form['amount'], form['currency'], form['description'])
 
     @staticmethod
     def create_sign(required_data, required_keys):
@@ -55,10 +50,7 @@ class Payment:
             status='Unknown'
         )
 
-        Payment.payment_num += 1
 
-
-@Payment.payment_subclass('978')
 class PayPageProcessing(Payment):
 
     keys_required = ('amount', 'currency', 'shop_id', 'shop_order_id')
@@ -73,7 +65,6 @@ class PayPageProcessing(Payment):
         return result
 
 
-@Payment.payment_subclass('840')
 class BillProcessing(Payment):
 
     keys_required = ('shop_amount', 'shop_currency', 'shop_id', 'shop_order_id', 'payer_currency')
@@ -98,7 +89,6 @@ class BillProcessing(Payment):
             app.logger.debug(f'{self.__name__} Request exception: {problem}')
 
 
-@Payment.payment_subclass('643')
 class InvoiceProcessing(Payment):
 
     keys_required = ('amount', 'currency', 'payway', 'shop_id', 'shop_order_id')
