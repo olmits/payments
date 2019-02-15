@@ -47,7 +47,9 @@ class Payment:
             description=self.description,
             update_date=datetime.now(),
             payment_id=self.payment_id,
-            status='Unknown'
+            status='Unknown'  # Create DB query of the payment with Unknown status.
+            # Status will be changed as user proceed on the next step.
+            # In case of an error, status will be changed from Unknown to 'Error'.
         )
 
 
