@@ -1,7 +1,9 @@
-from flask import render_template, request, redirect, flash, g
+from flask import render_template, request, flash, g
+
 from webapp import app
 from webapp.payment import Payment
 from webapp.db_model import PaymentsDB, db_proxy
+from webapp.paypage_funcs import currency_to_func_map as payment_map
 
 
 @app.before_request
@@ -16,25 +18,18 @@ def get_output():
     if request.method == 'POST':
 
         form = request.form
-        get_payment = Payment.create_payment(form.get('currency'), form)
-        send_request = get_payment.request()
+        user_currency = form.get('currency')
+        get_payment = Payment.create_payment(user_currency, form)
+        payment_data = get_payment.request()
 
-        if not send_request['data'] is None:
+        if not payment_data.get('data') is None:
             PaymentsDB.update_status('Success', get_payment.payment_id)
-
-            if form['currency'] == '978':
-                return render_template("pay_page.html", result=send_request)
-
-            elif form['currency'] == '840':
-                url = send_request['data']['url']
-                return redirect(url)
-
-            else:
-                return render_template("pay_page.html", result=send_request['data'])
+            result = payment_map.get(user_currency)
+            return result(payment_data)
         else:
-            flash(send_request['message'])
+            flash(payment_data['message'])
             PaymentsDB.update_status('Error', get_payment.payment_id)
-            app.logger.debug(f'{send_request.__name__} Response error message: {send_request["message"]}')
+            app.logger.debug(f'{payment_data.__name__} Response error message: {payment_data["message"]}')
             return render_template('payment.html')
     else:
         return render_template('payment.html')
